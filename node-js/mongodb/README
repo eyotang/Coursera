@@ -1,0 +1,13 @@
+mongod --dbpath=data
+
+
+mongo
+
+use conFusion
+
+db.dishes.insert({ name: "Uthapizza", description: "Test" });
+
+db.dishes.find().pretty();
+
+var id = new ObjectId();
+id.getTimestamp();
