@@ -57,4 +57,72 @@ router.route('/:dishId')
         });
     });
 
+router.route('/:dishId/comments')
+    .get(function(req, res, next) {
+        Dish.findById(req.params.dishId, function(err, dish) {
+            if (err) throw err;
+            res.json(dish.comments);
+        });
+    })
+    .post(function(req, res, next) {
+        Dish.findById(req.params.dishId, function(err, dish) {
+            if (err) throw err;
+            dish.comments.push(req.body);
+
+            dish.save(function(err, dish) {
+                if (err) throw err;
+                console.log('Updated Comments!');
+                console.log(dish);
+                res.json(dish);
+            });
+        });
+    })
+    .delete(function(req, res, next) {
+        Dish.findById(req.params.dishId, function(err, dish) {
+            if (err) throw err;
+            for (var i = (dish.comments.length - 1); i >= 0; i--) {
+                dish.comments.id(dish.comments[i]._id).remove();
+            }
+
+            dish.save(function(err, result) {
+                if (err) throw err;
+
+                res.writeHead(200, {
+                    'Content-Type': 'text/plain'
+                });
+                res.end('Deleted all comments');
+            });
+        });
+    });
+
+router.route('/:dishId/comments/:commentId')
+    .get(function(req, res, next) {
+        Dish.findById(req.params.dishId, function(err, dish) {
+            if (err) throw err;
+            res.json(dish.comments.id(req.params.commentId));
+        });
+    })
+    .put(function(req, res, next) {
+        Dish.findById(req.params.dishId, function(err, dish) {
+            if (err) throw err;
+            dish.comments.id(req.params.commentId).remove();
+            dish.comments.push(req.body);
+            dish.save(function(err, dish) {
+                if (err) throw err;
+                console.log('Updated Comments!');
+                console.log(dish);
+                res.json(dish);
+            });
+        });
+    })
+    .delete(function(req, res, next) {
+        Dish.findById(req.params.dishId, function(err, dish) {
+            dish.comments.id(req.params.commentId).remove();
+            dish.save(function(err, result) {
+                if (err) throw err;
+                res.json(result);
+            });
+        });
+    });
+
 module.exports = router;
